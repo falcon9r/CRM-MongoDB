@@ -43,7 +43,8 @@ namespace CRM_MongoDB.Repositories.ClientGroup
         {
             return clientCollection.Aggregate()
                 .Match(client => client.Id == id)
-                .Lookup<Client, Client>("regions", "region_id", "_id", "Region").Unwind<Client, Client>(client => client.Region).FirstOrDefault();
+                .Lookup<Client, Client>("regions", "region_id", "_id", "Region")
+                .Unwind<Client, Client>(client => client.Region).FirstOrDefault();
         }
 
 
