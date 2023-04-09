@@ -1,11 +1,12 @@
 ﻿using CRM_MongoDB.DTOs.OrderGroup;
+using CRM_MongoDB.Filter;
 using CRM_MongoDB.Models;
 
 namespace CRM_MongoDB.Repositories.OrderGroup
 {
     public interface IOrderRepository
     {
-        public Task<List<Order>> GetOrdersAsync();
+        public Task<List<Order>> GetOrdersAsync(PaginationFilter filter);
         
         public Task<Order> GetOrderByIdAsync(string id);
 

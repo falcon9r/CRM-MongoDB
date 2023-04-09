@@ -3,6 +3,7 @@ using CRM_MongoDB.Models;
 using CRM_MongoDB.Repositories.ClientGroup;
 using CRM_MongoDB.Repositories.OrderGroup;
 using CRM_MongoDB.Repositories.ProductGroup;
+using CRM_MongoDB.Wrappers;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -29,9 +30,10 @@ namespace CRM_MongoDB.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromQuery] Filter.PaginationFilter filter)
         {
-            return Ok(await orderRepository.GetOrdersAsync());
+            filter = new Filter.PaginationFilter(filter.PageNumber, filter.PageSize);
+            return Ok(new PagedResponse<List<Order>>(await orderRepository.GetOrdersAsync(filter) , filter.PageNumber , filter.PageSize));
         }
 
         [HttpGet("{id}")]
@@ -42,7 +44,7 @@ namespace CRM_MongoDB.Controllers
             {
                 return NotFound();
             }
-            return Ok(order);
+            return Ok(new Response<Order>(order));
         }
 
         [HttpPost]

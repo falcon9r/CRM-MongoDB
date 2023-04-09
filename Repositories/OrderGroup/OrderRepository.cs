@@ -1,4 +1,5 @@
 ﻿using CRM_MongoDB.DTOs.OrderGroup;
+using CRM_MongoDB.Filter;
 using CRM_MongoDB.Models;
 using MongoDB.Driver;
 
@@ -33,10 +34,10 @@ namespace CRM_MongoDB.Repositories.OrderGroup
             return await Body(filter).FirstOrDefaultAsync();
         }
 
-        public async Task<List<Order>> GetOrdersAsync()
+        public async Task<List<Order>> GetOrdersAsync(PaginationFilter Pfilter)
         {
             var filter = Builders<Order>.Filter.Empty;
-            return await Body(filter).ToListAsync();
+            return await Body(filter).Skip((Pfilter.PageNumber - 1) * Pfilter.PageSize).Limit(Pfilter.PageSize).ToListAsync();
         }
 
         private  IAggregateFluent<Order> Body(FilterDefinition<Order> filter)
