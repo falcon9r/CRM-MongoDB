@@ -6,9 +6,9 @@ namespace CRM_MongoDB.Repositories.OrderGroup
 {
     public interface IOrderRepository
     {
-        public Task<List<Order>> GetOrdersAsync(PaginationFilter filter);
+        public Task<List<Order>> GetOrdersAsync(string employee_id, PaginationFilter filter);
         
-        public Task<Order> GetOrderByIdAsync(string id);
+        public Task<Order> GetOrderByIdAsync(string employee_id , string id);
 
         public Task Create(OrderRequestDTO orderRequestDTO);
 

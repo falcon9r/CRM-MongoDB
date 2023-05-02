@@ -1,6 +1,7 @@
 ﻿using CRM_MongoDB.Entities;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
+using System.Text.Json.Serialization;
 
 namespace CRM_MongoDB.Models
 {
@@ -14,13 +15,11 @@ namespace CRM_MongoDB.Models
 
 
         [BsonElement("password") , BsonRepresentation(BsonType.String)]
+        [JsonIgnore]
         public string Password {  get; set; }
         
         [BsonElement("phone"), BsonRepresentation(BsonType.String)]
         public string Phone { get; set; }
-
-        [BsonElement("clients_ids")]
-        public virtual ICollection<string> ClientsIds {  get; set; }
 
         [BsonIgnore]
         public virtual ICollection<Client> Clients { get; set; }

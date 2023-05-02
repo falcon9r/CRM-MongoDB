@@ -23,7 +23,6 @@ namespace CRM_MongoDB.Services
             {
                new Claim(ClaimTypes.NameIdentifier, employee.Id.ToString()),
                new Claim(ClaimTypes.Name, employee.Login),
-               new Claim(ClaimTypes.MobilePhone, employee.Phone),
             };
 
             var token = new JwtSecurityToken

@@ -4,6 +4,8 @@ using CRM_MongoDB.Repositories.ClientGroup;
 using CRM_MongoDB.Repositories.OrderGroup;
 using CRM_MongoDB.Repositories.ProductGroup;
 using CRM_MongoDB.Wrappers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -13,6 +15,7 @@ namespace CRM_MongoDB.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class OrderController : ControllerBase
     {
 
@@ -33,13 +36,13 @@ namespace CRM_MongoDB.Controllers
         public async Task<IActionResult> Get([FromQuery] Filter.PaginationFilter filter)
         {
             filter = new Filter.PaginationFilter(filter.PageNumber, filter.PageSize);
-            return Ok(new PagedResponse<List<Order>>(await orderRepository.GetOrdersAsync(filter) , filter.PageNumber , filter.PageSize));
+            return Ok(new PagedResponse<List<Order>>(await orderRepository.GetOrdersAsync( GetUserId() ,filter) , filter.PageNumber , filter.PageSize));
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(string id)
         {
-            Order order = await orderRepository.GetOrderByIdAsync(id);
+            Order order = await orderRepository.GetOrderByIdAsync(GetUserId() , id);
             if(order == null)
             {
                 return NotFound();

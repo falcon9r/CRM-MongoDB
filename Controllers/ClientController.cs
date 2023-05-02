@@ -53,20 +53,20 @@ namespace CRM_MongoDB.Controllers
             return Ok();
         }
 
-        //[HttpPatch("{id:ObjectId}")]
-        //public async Task<IActionResult> Update([FromBody]ObjectId id, [FromForm] ClientRequestUpdateDTO clientRequestDTO)
-        //{
-        //    if(await clientRepository.IsValidPhone(phone: clientRequestDTO.Phone, clientId: id))
-        //    {
-        //        await clientRepository.Update(id, GetUserId(), clientRequestDTO);
-        //        return Ok();
-        //    }
-        //    else
-        //    {
-        //        ModelState.AddModelError("Phone", "Must be valid");
-        //        return ValidationProblem(ModelState);
-        //    }
-        //}
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Update(string id, ClientRequestUpdateDTO clientRequestDTO)
+        {
+            if (await clientRepository.IsValidPhone(phone: clientRequestDTO.Phone, clientId: id))
+            {
+                await clientRepository.Update(id, GetUserId(), clientRequestDTO);
+                return Ok();
+            }
+            else
+            {
+                ModelState.AddModelError("Phone", "Phoen is invalid");
+                return ValidationProblem(ModelState);
+            }
+        }
 
         private string GetUserId()
         {

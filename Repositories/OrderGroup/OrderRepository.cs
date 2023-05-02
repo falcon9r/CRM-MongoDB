@@ -1,4 +1,5 @@
 ﻿using CRM_MongoDB.DTOs.OrderGroup;
+using CRM_MongoDB.DTOs.ProductGroup;
 using CRM_MongoDB.Filter;
 using CRM_MongoDB.Models;
 using MongoDB.Driver;
@@ -28,33 +29,39 @@ namespace CRM_MongoDB.Repositories.OrderGroup
             });
         }
 
-        public async Task<Order> GetOrderByIdAsync(string id)
+        public async Task<Order> GetOrderByIdAsync(string empoyeeId, string id)
         {
-            var filter = Builders<Order>.Filter.Eq(order => order.Id, id);
+            var filter = Builders<Order>.Filter.Eq(order => order.Id, id) & Builders<Order>.Filter.Eq(order => order.Client.EmployeeId, empoyeeId);
             return await Body(filter).FirstOrDefaultAsync();
         }
 
-        public async Task<List<Order>> GetOrdersAsync(PaginationFilter Pfilter)
+        public async Task<List<Order>> GetOrdersAsync(string employeeId, PaginationFilter Pfilter)
         {
-            var filter = Builders<Order>.Filter.Empty;
+            var filter = Builders<Order>.Filter.Eq(order => order.Client.EmployeeId, employeeId);
             return await Body(filter).Skip((Pfilter.PageNumber - 1) * Pfilter.PageSize).Limit(Pfilter.PageSize).ToListAsync();
         }
 
         private  IAggregateFluent<Order> Body(FilterDefinition<Order> filter)
         {
             return _orderCollection.Aggregate()
-                .Match(filter).Lookup<Order, Order>("products", "product_id", "_id", "product")
+                .Lookup<Order, Order>("products", "product_id", "_id", "product")
                 .Unwind<Order, Order>(order => order.Product)
                 .Lookup<Order, Order>("clients", "client_id", "_id", "client")
                 .Unwind<Order, Order>(order => order.Client)
                 .Lookup<Order, Order>("regions", "client.region_id", "_id", "client.region")
                 .Unwind<Order, Order>(order => order.Client.Region)
-                .Lookup<Order, Order>("categories", "product.categories_ids", "_id", "product.categories");
+                .Lookup<Order, Order>("categories", "product.categories_ids", "_id", "product.categories").Match(filter);
         }
 
-        public Task Update(string id, OrderRequestUpdateDTO orderRequestUpdateDTO)
+        public async Task Update(string id, OrderRequestUpdateDTO orderRequestUpdateDTO)
         {
-            throw new NotImplementedException();
+            var filter = Builders<Order>.Filter.Eq(o => o.Id, id);
+            var update = Builders<Order>.Update
+                .Set(o => o.Price, orderRequestUpdateDTO.Price)
+                .Set(o => o.ProductId, orderRequestUpdateDTO.ProductId)
+                .Set(o => o.ClientId, orderRequestUpdateDTO.ClientId);
+            _orderCollection.UpdateOne(filter, update);
+
         }
     }
 }

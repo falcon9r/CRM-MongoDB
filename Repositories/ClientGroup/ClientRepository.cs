@@ -20,7 +20,10 @@ namespace CRM_MongoDB.Repositories.ClientGroup
 
         public async Task<IList<Client>> GetAllActive(string employeeId)
         {
-            return await clientCollection.Find(client => client.IsActive == true && client.EmployeeId == employeeId).ToListAsync();
+            return await clientCollection.Aggregate()
+                .Match(client => client.EmployeeId == employeeId)
+                .Lookup<Client, Client>("regions", "region_id", "_id", "Region")
+                .Unwind<Client, Client>(client => client.Region).ToListAsync();
         }
 
 
@@ -42,9 +45,11 @@ namespace CRM_MongoDB.Repositories.ClientGroup
         public async Task<Client> GetById(string id, string employeeId)
         {
             return clientCollection.Aggregate()
-                .Match(client => client.Id == id)
+                .Match(client => client.Id == id && client.EmployeeId == employeeId)
                 .Lookup<Client, Client>("regions", "region_id", "_id", "Region")
-                .Unwind<Client, Client>(client => client.Region).FirstOrDefault();
+                .Unwind<Client, Client>(client => client.Region)
+                .Lookup<Client, Client>("employees", "employee_id", "_id", "employee")
+                .Unwind<Client, Client>(client => client.Employee).FirstOrDefault();
         }
 
 

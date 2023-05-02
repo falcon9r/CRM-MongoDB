@@ -30,7 +30,7 @@ namespace CRM_MongoDB.Models
         [BsonElement("is_active") , BsonRepresentation(BsonType.Boolean)]
         public bool IsActive { get; set; }
 
-        [BsonIgnore]
+        [BsonIgnoreIfNull, BsonElement("employee")]
         public virtual Employee Employee { get; set; }
         
         [BsonIgnoreIfNull, BsonElement("region")]

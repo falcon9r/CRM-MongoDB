@@ -42,11 +42,13 @@ namespace CRM_MongoDB.Controllers
 
         [HttpPost]
         [Route("Register")]
-      //  [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Register(EmployeeRegisterDTO employeeRegisterDTO)
         {
             await this.employeeRepository.Create(employeeRegisterDTO);
-            return Ok();
+            return Ok(new { 
+                Message = "Employee added"
+            });
         }
     }
 }

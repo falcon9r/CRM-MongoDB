@@ -3,6 +3,8 @@ using CRM_MongoDB.DTOs.ProductGroup;
 using CRM_MongoDB.Models;
 using CRM_MongoDB.Repositories.CategoryGroup;
 using CRM_MongoDB.Repositories.ProductGroup;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
@@ -11,6 +13,7 @@ namespace CRM_MongoDB.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ProductController : ControllerBase
     {
         private readonly IProductRepository _productRepository;
